@@ -1,0 +1,74 @@
+
+name: PTT-Crosslink Windows EXE Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build PTT-Crosslink Windows 64-bit
+    runs-on: windows-latest
+
+    steps:
+      - name: Download source code
+        uses: actions/checkout@v4
+
+      - name: Install Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          architecture: 'x64'
+
+      - name: Update pip
+        run: python -m pip install --upgrade pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install -r requirements.txt
+          python -m pip install pyinstaller pytest
+
+      - name: Check Python source
+        run: |
+          python -m py_compile app.py
+          python -m py_compile engine.py
+          python -m py_compile speech.py
+
+      - name: Run audio tests
+        run: python -m pytest tests/ -v
+
+      - name: Build Windows EXE
+        shell: pwsh
+        run: |
+          python -m PyInstaller `
+            --noconfirm `
+            --clean `
+            --windowed `
+            --onefile `
+            --name "ptt-crosslink" `
+            --add-data "tts_windows.ps1;." `
+            app.py
+
+      - name: Check EXE file
+        shell: pwsh
+        run: |
+          if (!(Test-Path "dist/ptt-crosslink.exe")) {
+            throw "Windows EXE build failed!"
+          }
+          Write-Host "PTT-Crosslink EXE successfully created."
+
+      - name: Upload Windows application
+        uses: actions/upload-artifact@v4
+        with:
+          name: PTT-Crosslink-Windows-x64
+          path: dist/ptt-crosslink.exe
+          retention-days: 30
+          if-no-files-found: error
