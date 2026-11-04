@@ -1,113 +1,65 @@
-# PTT-Crosslink v0.1 — TeamSpeak 3 A/B Gateway
+# PTT-Crosslink v0.2 — Windows directe TeamSpeak-crosslink (proefversie)
 
-Een **eerste testversie** van een Windows-gateway tussen twee TeamSpeak 3-servers met functies die zijn geïnspireerd op repeatercontrollers zoals OpenRepeater/SVXLink. Dit is eigen Python-code, **geen** Windows-port of kopie van OpenRepeater/SVXLink.
+**Nieuw:** eigen TeamSpeak-spraakverbindingen naar server A en server B, zonder TeamSpeak-clientvensters of virtuele audiokabels. Gebaseerd op onafhankelijke TeamSpeak-3-protocolsoftware `@honeybbq/teamspeak-client` (MIT) en OpusScript (MIT). De radiobediening is een eigen implementatie, **geen kopie van OpenRepeater of PTTConnect-PC**.
 
-## Wat werkt in deze versie
+## Mogelijkheden
 
-- **Tweerichtings-audiobrug**: ontvangst op server A → uitzending op B, en ontvangst op B → uitzending op A.
-- **RX/TX-indicatoren en audioniveaumeters** met een gebeurtenissenlog.
-- **VOX**: een uitzending start bij voldoende binnenkomend audioniveau; instelbare drempel en nalooptijd.
-- **Half-duplex anti-loop**: tijdens een A→B-uitzending is B→A tijdelijk geblokkeerd. Bij gelijktijdige start wint de luidste richting.
-- **Afvalpiep (courtesy/roger-beep)** na ontvangst, met instelbare frequentie, lengte en aan/uit.
-- **TX-timeout**: maximale onafgebroken spreektijd. Na timeout blijft die richting geblokkeerd totdat de spreker stilvalt.
-- **Callgever**: gesproken identificatietekst, op beide servers, met instelbaar interval.
-- **Tijdmelder**: gesproken lokale computertijd, op beide servers, met instelbaar interval.
-- **Testpiep**, apart naar server A of B, en opgeslagen instellingen.
+- TeamSpeak 3 server A ↔ server B, direct UDP 9987 / Opus 4/5 doorgeven (gecodeerd, zonder decoderen).
+- Twee eigen botaccounts en optioneel een kanaalnaam of wachtwoord per server.
+- A → B en B → A; één spreekrichting tegelijk om terugkoppeling te vermijden.
+- Per uitzending één spreker doorgeven, zodat meerdere Opus-stromen niet door elkaar gaan.
+- Instelbare afvaltijd en TX-timeout inclusief herinschakelen na stilte.
+- Afvalpiep, handmatige/automatische callgever en tijdmelder via Windows-spraak (TTS).
+- Dashboard met verbindingsstatus en ontvangen/verzonden richting.
+- Aparte identiteiten voor beide servers, lokaal opgeslagen in Windows AppData.
+- Portable Windows-EXE via GitHub Actions, gebaseerd op Electron.
 
-## BELANGRIJK: directe TeamSpeak-koppeling versus audiobrug
+## GitHub Actions: automatisch Windows-programma bouwen
 
-Deze v0.1 **maakt zelf geen rechtstreekse verbinding met de TeamSpeak-spraakserver**. Daarvoor zou een TeamSpeak-client/plugin of daarvoor geschikte clientbibliotheek nodig zijn. Het programma **stuurt audio via twee officiële TeamSpeak 3-clients en vier virtuele audiokabels**. Het audiotransport over het netwerk blijft dus bij TeamSpeak 3. Er is geen ServerQuery nodig voor het geluid.
+1. Open [michiel66/michiel66-ptt-crosslink](https://github.com/michiel66/michiel66-ptt-crosslink).
+2. Upload **de inhoud** van deze ZIP naar de root van `main`, inclusief `.github/workflows/windows-direct-v02.yml`. Dit is **v0.2**; bestaande v0.1-bestanden mogen voorlopig blijven staan, maar de nieuwe `package.json`, `main.cjs`, `bridge/`, `ui/` en `tests/*.test.cjs` moeten aanwezig zijn.
+3. Onder GitHub **Actions → PTT-Crosslink v0.2 Windows DIRECT EXE → laatste run** staat na een geslaagde build **PTT-Crosslink-v0.2-Windows-Direct** bij Artifacts. Dat artifact bevat een portable `.exe`.
+4. Start het programma op Windows 10/11 en vul in het dashboard server B in, het gewenste kanaal en eventuele wachtwoorden. Klik **CROSSLINK STARTEN**.
 
-TeamSpeak-clients moeten al zijn geïnstalleerd en afzonderlijk in de juiste kanalen zitten. De knoppen 'Open TeamSpeak A/B' openen alleen een serveradres via de `ts3server://`-protocolkoppeling; zij controleren **niet** of het aanmelden gelukt is. Kanaalwachtwoorden en vereiste permissies stel je in TeamSpeak zelf in.
+**Opmerking:** de oude Python-buildworkflow v0.1 kan ook nog draaien. In Actions kies je expliciet de workflow met **v0.2 Windows DIRECT EXE**. 
 
-Heb je de **PTT Direct/PTT Connect broncode** die al rechtstreeks met TeamSpeak praat, dan kunnen we de audiolaag hiervan later vervangen om zonder virtuele kabels te werken. Deze broncode is nog niet in deze versie geïntegreerd.
+## Zelf bouwen op Windows
 
-## GitHub: automatisch Windows-EXE bouwen
+Installeer Node.js 22 en Git. Open een opdrachtprompt in deze map:
 
-De workflow `.github/workflows/windows-build.yml` draait op een Windows-runner.
-Bij een push naar `main`, bij een pull request of bij handmatig **Actions → Windows EXE bouwen → Run workflow**:
-
-1. Installeert GitHub Actions Python 3.12 en de benodigde bibliotheken.
-2. Draait de tests in `tests/`.
-3. Bouwt met PyInstaller de EXE `ptt-crosslink.exe` (64-bit).
-4. Uploadt het downloadbare artifact `ptt-crosslink-windows-x64` naar de workflow-run.
-
-Open na een geslaagde run op GitHub **Actions → Windows EXE bouwen → de laatste run → Artifacts → ptt-crosslink-windows-x64**. Download de ZIP met de Windows-EXE.
-
-### Eén keer een repository maken
-
-GitHub-repository: **`michiel66/ptt-crosslink`**. Maak op GitHub een **lege repository** met de naam `ptt-crosslink` (geen README, geen `.gitignore`, geen licentie vooraf toevoegen). Pak het broncodepakket uit. Start `UPLOAD_NAAR_GITHUB.bat` op Windows met Git geïnstalleerd en meld je bij GitHub aan. Het script maakt de repository **niet** zelf aan: dat doe je eerst op GitHub.
-
-Via GitHub's website kun je de bestanden ook handmatig uploaden. Let erop dat de verborgen directory `.github/workflows/` inclusief het workflowbestand behouden blijft; anders verschijnt de automatische EXE-build niet.
-
-**Geen release automatisch:** de EXE is beschikbaar als Actions-artifact; een aparte Releases-pagina volgt pas na een release-publicatiestap.
-
-## Windows installeren
-
-1. Vereist: Windows 10 of 11 (64-bit); Python 3.11 of 3.12 (64-bit); **TeamSpeak 3-client**.
-2. Installeer vier onafhankelijke virtuele audiokabels (bijvoorbeeld met virtuele audio-driversoftware die 4 onafhankelijke lijnen biedt). Elke lijn heeft een `CABLE Input` (Windows *afspeelapparaat*) en `CABLE Output` (Windows *opnameapparaat*). De juiste namen kunnen afwijken per driver.
-3. Pak de ZIP uit in een **schrijfbare map** (bijv. Documenten). Dubbelklik `INSTALLEREN.bat` (installatie van Python-bibliotheken vereist internet).
-4. Dubbelklik `START_CROSSLINK.bat`.
-5. Voer het serveradres van B in. De standaard voor A is `Heerlen.MIJNTS3.NL`.
-6. Start twee onafhankelijke TeamSpeak 3-clients; zo nodig met `-nosingleinstance` als opstartargument. Configureer **verschillende afspeel- en opnameprofielen**, zodat zij niet dezelfde audioapparaten gebruiken. Een tweede TS3-installatie met een eigen configuratiemap kan nodig zijn om instellingen te scheiden.
-7. Verbind de ene TS3-client met server A en het juiste kanaal, en de andere TS3-client met server B en het juiste kanaal.
-8. Stel de vier apparaatslots in volgens het schema hieronder. Zet op **beide TS3-clients spraakactivering (Voice Activation)** aan, niet handmatige PTT, en stel die op een lage maar bruikbare drempel in. Geef de botaccounts spreekrechten.
-9. Klik op **CROSSLINK STARTEN** en gebruik eerst de **Testpiep**-knoppen; test daarna met twee andere gebruikers in de respectieve kanalen.
-
-### Schema van de vier virtuele kabels
-
-```text
-TEAMSpeak-client A, server A                        TEAMSpeak-client B, server B
-
-A luidspreker ─► KABEL 1 Input
-                   KABEL 1 Output ─► [APP A_RX]
-                                            └── VOX / repeater / afvalpiep ─► [APP B_TX] ─► KABEL 2 Input
-                                                                                            KABEL 2 Output ─► B microfoon
-
-B luidspreker ─► KABEL 3 Input
-                   KABEL 3 Output ─► [APP B_RX]
-                                            └── VOX / repeater / afvalpiep ─► [APP A_TX] ─► KABEL 4 Input
-                                                                                            KABEL 4 Output ─► A microfoon
+```cmd
+npm install
+npm test
+npm run dist
 ```
 
-| Programmaslot | Kies in deze Windows-app | In TeamSpeak 3 instellen |
-|---|---|---|
-| `Server A · RX` | Opnameapparaat van **KABEL 1** (Output 1) | TS3-A Playback: afspeelapparaat **KABEL 1** (Input 1) |
-| `Server B · TX` | Afspeelapparaat van **KABEL 2** (Input 2) | TS3-B Capture: opnameapparaat **KABEL 2** (Output 2) |
-| `Server B · RX` | Opnameapparaat van **KABEL 3** (Output 3) | TS3-B Playback: afspeelapparaat **KABEL 3** (Input 3) |
-| `Server A · TX` | Afspeelapparaat van **KABEL 4** (Input 4) | TS3-A Capture: opnameapparaat **KABEL 4** (Output 4) |
+Het resultaat verschijnt in `dist/`. De portable build bevat Electron en heeft geen Node-installatie op de doel-PC nodig.
 
-**Let op:** de vier kabels moeten onafhankelijk zijn. Twee kabels hergebruiken voor zowel RX als TX veroorzaakt gemakkelijk een audiolus. Gebruik geen fysieke luidsprekers/microfoon als bridge-endpoints.
+## Belangrijkste instellingen
 
-### TeamSpeak PTT / VOX
+- **A** heeft standaard adres `Heerlen.MIJNTS3.NL`; **B** vul je zelf in.
+- Voor verschillende kanalen op dezelfde server kun je dezelfde host gebruiken, maar beide gatewayaccounts moeten in verschillende kanalen staan.
+- **Afvalpiep:** 880 Hz / 180 ms; **afvaltijd:** 450 ms.
+- **Callgever:** elke 15 min; **tijdmelder:** elke 60 min; 0 schakelt uit.
+- **TX-timeout:** 180 seconden. Na uitschakelen mag de spreker weer zenden zodra die enige tijd stil is.
+- Server- en kanaalwachtwoorden worden **niet opgeslagen**; deze moet je bij opnieuw starten opnieuw invullen. De identiteiten worden wel lokaal opgeslagen onder AppData.
 
-Omdat dit programma v0.1 TeamSpeak niet via een directe API aanstuurt, schakelt **TeamSpeak zelf de microfoon in op basis van Voice Activation**. Gebruik voor de gateway-clients *geen* PTT-druktoets tenzij een externe PTT-controller die automatisch bedient. De VOX in deze app bepaalt welke richting de brug mag doorgeven; de TS3-spraakactivering moet daarnaast correct staan. Schakel automatische gain/echo-opheffing alleen in als dat nodig is voor jouw setup.
+## Tests en huidige beperkingen
 
-### Instellingen
+Dit pakket is **een technische proefversie**. De lokale JavaScript-controller en TTS-golfvormverwerking hebben tests, maar de verbinding met twee live TeamSpeak-servers is hier nog niet getest. Pas na een geslaagde GitHub-EXE-build en een echt gesprek op twee servers kunnen we live tweeweg-audio bevestigen. Andere punten:
 
-- **VOX-drempel** standaard `0.025` (RMS op een schaal van 0 tot 1). Verlaag bij te weinig doorkomst, verhoog bij ongewenst openen door achtergrondruis.
-- **RX nalooptijd** standaard 450 ms.
-- **Afvalpiep** standaard 880 Hz / 180 ms, 90 ms na een beëindigde uitzending.
-- **TX-timeout** standaard 180 s. Waarde `0` schakelt timeout uit.
-- **Callgever** standaard iedere 15 minuten; interval `0` schakelt uit.
-- **Tijdmelder** standaard iedere 60 minuten; interval `0` schakelt uit. De klok komt van de Windows-pc.
-- **Windows TTS**: de software kiest waar mogelijk een geïnstalleerde Nederlandse spraakstem; zo niet wordt de standaardstem gebruikt. Geen internet nodig voor TTS, maar een geschikte Windows-tekst-naar-spraakstem is wel vereist.
+- Voor ontvangst is de Opus-spraakroute uit de clientprotocolbibliotheek gebruikt. Het doorgeven van ontvangen gecodeerde frames vermijdt virtuele kabels en verslechtering door opnieuw encoderen.
+- De **OpusScript**-encoder maakt eigen piepen en Windows-TTS; er is **geen afzonderlijke fysieke microfoon**.
+- Audio via meerdere gelijktijdige sprekers wordt niet gemengd. De repeater kiest één spreker per uitzending en is bewust half-duplex.
+- Gebruikers moeten toestemming hebben om de twee gatewayaccounts de juiste kanalen te laten betreden en in die kanalen te spreken.
+- Na verlies van één serververbinding stopt het doorgeven tot je de crosslink opnieuw start. Automatisch reconnecten en uitgebreid audiomengen zijn voor een volgende versie.
+- Opus codecs 4 en 5 worden doorgestuurd. Andere codecs worden genegeerd.
+- Deze versie implementeert nog geen DTMF of Hardware-PTT.
 
-Meldingen wachten tot er niemand spreekt. Eventuele wachttijd is niet begrensd als het kanaal voortdurend bezet blijft.
+## Techniek & auteursrechten
 
-## Een EXE bouwen
+Eigen repeatercontroller, lokaal Electron-venster, zonder externe webserver. TeamSpeak is een merk van TeamSpeak Systems en dit project wordt niet door TeamSpeak ondersteund. Derdenbibliotheken `@honeybbq/teamspeak-client` 0.3.3 en `opusscript` 0.1.1 zijn MIT-gelicentieerd; hun bijgeleverde licenties en auteursvermeldingen moeten bij distributie behouden blijven. Deze repository bevat geen TeamSpeak SDK-bestanden. 
 
-Dubbelklik na installatie op `BOUW_WINDOWS_EXE.bat` op je Windows-pc. Dit installeert PyInstaller en bouwt `dist\ptt-crosslink.exe`. **Er zit nog geen kant-en-klare Windows-EXE in het broncodepakket**; GitHub Actions kan de EXE automatisch bouwen, of je bouwt lokaal op Windows. Python is na het bouwen op de doel-pc normaal gesproken niet nodig. TeamSpeak-clients, virtuele audiokabels en Windows-spraakondersteuning zijn nog wel nodig.
+## Snel uploaden met Windows
 
-## Beperkingen / teststatus
-
-- Offline getest zijn de audio-routerlogica, half-duplexrichting, timeout, testpiep en afvalpiep. **De volledige gateway is nog niet getest op een Windows-pc met twee live TeamSpeak-servers.**
-- Geen directe native verbinding met TS3, geen automatische serverstatus, kanaal- of gebruikerslijsten, geen regelbare TS3-PTT via de client-API.
-- Geen DTMF-decoder, geen echte PTT via seriële poort, geen openrepeater-WebUI, geen CW-callgever of opgenomen WAV-meldingen.
-- Voor **volledig gelijktijdige gesprekken in beide richtingen** zou een speciale echo-/loop-architectuur nodig zijn; deze versie is doelbewust half-duplex.
-- De actuele versie biedt geen afzonderlijke instellingen om op A en B een andere calltekst uit te zenden.
-- Start met volume laag en test met beperkte rechten voordat je gateways permanent laat draaien.
-
-## Broncode / licentie-informatie
-
-Deze voorbeeldapp is vanaf nul opgesteld om audiostromen via de lokale geluidssubsystemen te verwerken. Er is geen OpenRepeater- of SVXLink-code, geen TeamSpeak-bibliotheek en geen audiodriver in het ZIP-bestand opgenomen. De gebruiker moet de TeamSpeak-client en bijbehorende audioapparaten zelf installeren en de toepasselijke voorwaarden respecteren.
+Pak de ZIP uit op je Windows-PC. Dubbelklik `UPLOAD_NAAR_GITHUB.bat` als Git for Windows is geïnstalleerd en je kunt inloggen op GitHub. Het script maakt tijdelijk een clone van de bestaande repository, kopieert de **v0.2**-bestanden, commit en pusht naar `main`. Het overschrijft je bestaande Python v0.1-bestanden en workflow **niet**. Als GitHub het pushen blokkeert, upload de bestanden handmatig via de GitHub-website.
