@@ -1,10 +1,9 @@
 
-name: PTT-Crosslink v0.2 Windows DIRECT EXE
+name: PTT-Crosslink v0.2.1 Windows DIRECT EXE
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -12,42 +11,38 @@ permissions:
 
 jobs:
   build:
-    name: Build PTT-Crosslink v0.2
     runs-on: windows-latest
 
     steps:
-      - name: Download source code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Install Node.js 22
+      - name: Node.js 22 installeren
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          architecture: 'x64'
 
-      - name: Install dependencies
+      - name: Bibliotheken installeren
         run: npm install --no-audit --no-fund
 
-      - name: Run crosslink tests
+      - name: Controller en audiorouter testen
         run: npm test
 
-      - name: Build Windows portable EXE
+      - name: Windows portable EXE maken
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
         run: npm run dist
 
-      - name: Check Windows EXE
+      - name: Windows EXE controleren
         shell: pwsh
         run: |
           if (-not (Get-ChildItem dist/*.exe -ErrorAction SilentlyContinue)) {
-            throw "PTT-Crosslink EXE niet gevonden!"
+            throw 'Geen EXE gevonden'
           }
-          Write-Host "Windows EXE succesvol gebouwd!"
 
-      - name: Upload Windows EXE
+      - name: Downloadbare PTT-Crosslink EXE opslaan
         uses: actions/upload-artifact@v4
         with:
-          name: PTT-Crosslink-v0.2-Windows-Direct
+          name: PTT-Crosslink-v0.2.1-Windows-Direct
           path: dist/*.exe
           if-no-files-found: error
           retention-days: 30
