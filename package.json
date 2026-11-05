@@ -1,9 +1,8 @@
-
 {
   "name": "ptt-crosslink",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "private": true,
-  "description": "TeamSpeak A/B crosslink v0.2.1 met Windows TTS, callgever, tijdmelder en Channel Commander",
+  "description": "TeamSpeak crosslink met tijdmelder, callgever, Channel Commander en omroepen van gebruikersnamen bij kanaalbinnenkomst",
   "main": "main.cjs",
   "scripts": {
     "start": "electron .",

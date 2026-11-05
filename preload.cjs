@@ -1,8 +1,5 @@
-
 'use strict';
-
 const { contextBridge, ipcRenderer } = require('electron');
-
 contextBridge.exposeInMainWorld('ptt', {
   getSettings: () => ipcRenderer.invoke('bridge:getSettings'),
   saveSettings: values => ipcRenderer.invoke('bridge:saveSettings', values),
@@ -12,6 +9,6 @@ contextBridge.exposeInMainWorld('ptt', {
   time: () => ipcRenderer.invoke('bridge:time'),
   beep: side => ipcRenderer.invoke('bridge:beep', side),
   commander: side => ipcRenderer.invoke('bridge:commander', side),
-  onEvent: handler =>
-    ipcRenderer.on('bridge:event', (_e, message) => handler(message))
+  setWelcome: enabled => ipcRenderer.invoke('bridge:setWelcome', enabled),
+  onEvent: handler => ipcRenderer.on('bridge:event', (_e, message) => handler(message))
 });

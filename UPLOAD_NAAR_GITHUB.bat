@@ -8,9 +8,9 @@ if errorlevel 1 (
   exit /b 1
 )
 set "GIT_URL=https://github.com/michiel66/michiel66-ptt-crosslink.git"
-set "WORK=%TEMP%\PTT-Crosslink-v02-Upload"
+set "WORK=%TEMP%\PTT-Crosslink-v022-Upload"
 if exist "%WORK%" rmdir /s /q "%WORK%"
-echo PTT-Crosslink v0.2 naar GitHub uploaden...
+echo PTT-Crosslink v0.2.2 naar GitHub uploaden...
 git clone "%GIT_URL%" "%WORK%"
 if errorlevel 1 goto fail
 copy /y "main.cjs" "%WORK%\" >nul
@@ -29,7 +29,7 @@ copy /y "tests\*.test.cjs" "%WORK%\tests\" >nul
 copy /y ".github\workflows\windows-direct-v02.yml" "%WORK%\.github\workflows\" >nul
 pushd "%WORK%"
 git add README.md main.cjs preload.cjs package.json tts_windows.ps1 .gitignore bridge ui tests .github/workflows/windows-direct-v02.yml
-git commit -m "PTT-Crosslink v0.2: directe TS3 Opus crosslink en Windows app"
+git commit -m "PTT-Crosslink v0.2.2: fix spraakmeldingen en Channel Commander"
 if errorlevel 1 (
  echo Geen wijzigingen om te uploaden, of commit niet mogelijk.
  popd

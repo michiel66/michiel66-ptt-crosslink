@@ -1,269 +1,65 @@
-
 <!doctype html>
 <html lang="nl">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy"
-  content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'">
 <title>PTT-Crosslink · TS3 Direct Gateway</title>
 <link rel="stylesheet" href="style.css">
 <script defer src="ui.js"></script>
 </head>
 <body>
-
 <header class="header">
-  <div class="brand">
-    <div class="logo">PTT</div>
-    <div>
-      <h1>PTT-Crosslink <span>v0.2.1</span></h1>
-      <p>DIRECT TEAMSPEAK A/B REPEATER CONTROLLER</p>
-    </div>
-  </div>
+  <div class="brand"><div class="logo">PTT</div><div><h1>PTT-Crosslink <span>v0.2.2</span></h1><p>DIRECT TEAMSpeak A/B REPEATER CONTROLLER</p></div></div>
   <div id="overall" class="status">● UITGESCHAKELD</div>
 </header>
-
 <main>
-
-<section class="links">
-
-  <article class="card server">
-    <div class="card-head">
-      <h2>SERVER A <span class="name">· HEERLEN</span></h2>
-      <span id="statusA" class="pill off">OFFLINE</span>
-    </div>
-
-    <label>Serveradres
-      <input id="aHost"
-        placeholder="Heerlen.MIJNTS3.NL"
-        autocomplete="off">
-    </label>
-
-    <div class="twocol">
-      <label>TeamSpeak-kanaal
-        <input id="aChannel" placeholder="Standaardkanaal">
-      </label>
-      <label>Botnaam
-        <input id="aNick">
-      </label>
-    </div>
-
-    <div class="twocol">
-      <label>Serverwachtwoord
-        <input id="aPassword" type="password" placeholder="optioneel">
-      </label>
-      <label>Kanaalwachtwoord
-        <input id="aChannelPassword" type="password" placeholder="optioneel">
-      </label>
-    </div>
-
-    <div class="commander-control">
-      <button id="commanderA" class="commander-button" disabled>
-        ☆ CHANNEL COMMANDER A: UIT
-      </button>
-      <small>Schakelt de crosslink-bot op server A</small>
-    </div>
-
-    <div class="rxline">
-      <span class="round" id="rxA"></span>
-      <b>RX A</b>
-      <span class="rxtext">Ontvangt audiodata rechtstreeks</span>
-    </div>
-  </article>
-
-  <div class="switch">
-    <div class="arrow">↔</div>
-    <strong>A ↔ B</strong>
-    <span>2-WEG<br>CROSSLINK</span>
-  </div>
-
-  <article class="card server">
-    <div class="card-head">
-      <h2>SERVER B <span class="name">· CROSSLINK</span></h2>
-      <span id="statusB" class="pill off">OFFLINE</span>
-    </div>
-
-    <label>Serveradres
-      <input id="bHost"
-        placeholder="voorbeeld: serverb.nl:9987"
-        autocomplete="off">
-    </label>
-
-    <div class="twocol">
-      <label>TeamSpeak-kanaal
-        <input id="bChannel" placeholder="Standaardkanaal">
-      </label>
-      <label>Botnaam
-        <input id="bNick">
-      </label>
-    </div>
-
-    <div class="twocol">
-      <label>Serverwachtwoord
-        <input id="bPassword" type="password" placeholder="optioneel">
-      </label>
-      <label>Kanaalwachtwoord
-        <input id="bChannelPassword" type="password" placeholder="optioneel">
-      </label>
-    </div>
-
-    <div class="commander-control">
-      <button id="commanderB" class="commander-button" disabled>
-        ☆ CHANNEL COMMANDER B: UIT
-      </button>
-      <small>Schakelt de crosslink-bot op server B</small>
-    </div>
-
-    <div class="rxline">
-      <span class="round" id="rxB"></span>
-      <b>RX B</b>
-      <span class="rxtext">Ontvangt audiodata rechtstreeks</span>
-    </div>
-  </article>
-</section>
-
-<section class="maincols">
-
-  <div class="left">
-    <article class="card controller">
-      <div class="card-head">
-        <h2>LIVE RX / TX</h2>
-        <span id="direction" class="state">STANDBY</span>
-      </div>
-
-      <div class="signals">
-        <div>
-          <div class="mini">A → B</div>
-          <div id="ab" class="signal inactive">
-            ● RX A / TX B
-          </div>
-        </div>
-        <div>
-          <div class="mini">B → A</div>
-          <div id="ba" class="signal inactive">
-            ● RX B / TX A
-          </div>
-        </div>
-      </div>
-
-      <div class="counts">
-        <span>
-          Doorgestuurde Opus-pakketten A → B:
-          <b id="countAB">0</b>
-        </span>
-        <span>
-          B → A:
-          <b id="countBA">0</b>
-        </span>
-      </div>
-
-      <div class="actions">
-        <button id="start" class="start">
-          ▶ CROSSLINK STARTEN
-        </button>
-        <button id="stop" class="stop" disabled>
-          ■ STOP
-        </button>
-      </div>
+  <section class="links">
+    <article class="card server"><div class="card-head"><h2>SERVER A <span class="name">· HEERLEN</span></h2><span id="statusA" class="pill off">OFFLINE</span></div>
+      <label>Serveradres <input id="aHost" placeholder="Heerlen.MIJNTS3.NL" autocomplete="off"></label>
+      <div class="twocol"><label>TeamSpeak-kanaal <input id="aChannel" placeholder="Standaardkanaal"></label><label>Botnaam <input id="aNick"></label></div>
+      <div class="twocol"><label>Serverwachtwoord <input id="aPassword" type="password" placeholder="optioneel"></label><label>Kanaalwachtwoord <input id="aChannelPassword" type="password" placeholder="optioneel"></label></div>
+      <div class="commander-control"><button id="commanderA" class="commander-button" disabled>☆ CHANNEL COMMANDER A: UIT</button><small>Schakelt de crosslink-bot op server A</small></div>
+      <div class="rxline"><span class="round" id="rxA"></span><b>RX A</b><span class="rxtext">Ontvangt audiodata rechtstreeks</span></div>
     </article>
-
-    <article class="card">
-      <div class="card-head">
-        <h2>RADIOLOG</h2>
-        <button id="clearlog" class="subtle">
-          Wissen
-        </button>
-      </div>
-      <div id="logs" role="log" aria-live="polite"></div>
+    <div class="switch"><div class="arrow">↔</div><strong>A ↔ B</strong><span>2-WEG<br>CROSSLINK</span></div>
+    <article class="card server"><div class="card-head"><h2>SERVER B <span class="name">· CROSSLink</span></h2><span id="statusB" class="pill off">OFFLINE</span></div>
+      <label>Serveradres <input id="bHost" placeholder="voorbeeld: serverb.nl:9987" autocomplete="off"></label>
+      <div class="twocol"><label>TeamSpeak-kanaal <input id="bChannel" placeholder="Standaardkanaal"></label><label>Botnaam <input id="bNick"></label></div>
+      <div class="twocol"><label>Serverwachtwoord <input id="bPassword" type="password" placeholder="optioneel"></label><label>Kanaalwachtwoord <input id="bChannelPassword" type="password" placeholder="optioneel"></label></div>
+      <div class="commander-control"><button id="commanderB" class="commander-button" disabled>☆ CHANNEL COMMANDER B: UIT</button><small>Schakelt de crosslink-bot op server B</small></div>
+      <div class="rxline"><span class="round" id="rxB"></span><b>RX B</b><span class="rxtext">Ontvangt audiodata rechtstreeks</span></div>
     </article>
-  </div>
-
-  <div class="right">
-    <article class="card repeater">
-
-      <div class="card-head">
-        <h2>REPEATER FUNCTIES</h2>
-        <span class="muted">OPENREPEATER-STIJL</span>
+  </section>
+  <section class="maincols">
+    <div class="left">
+      <article class="card controller"><div class="card-head"><h2>LIVE RX / TX</h2><span id="direction" class="state">STANDBY</span></div>
+        <div class="signals"><div><div class="mini">A → B</div><div id="ab" class="signal inactive">● RX A / TX B</div></div><div><div class="mini">B → A</div><div id="ba" class="signal inactive">● RX B / TX A</div></div></div>
+        <div class="counts"><span>Doorgestuurde Opus-pakketten A → B: <b id="countAB">0</b></span><span>B → A: <b id="countBA">0</b></span></div>
+        <div class="actions"><button id="start" class="start">▶ CROSSLINK STARTEN</button><button id="stop" class="stop" disabled>■ STOP</button></div>
+      </article>
+      <article class="card"><div class="card-head"><h2>RADIOLOG</h2><button id="clearlog" class="subtle">Wissen</button></div><div id="logs" role="log" aria-live="polite"></div></article>
+    </div>
+    <div class="right"><article class="card repeater"><div class="card-head"><h2>REPEATER FUNCTIES</h2><span class="muted">OPENREPEATER-STIJL</span></div>
+      <div class="settings"><label class="wide">Callgever (gesproken tekst)<textarea id="callText" rows="2"></textarea></label>
+      <label>Callgever interval (min) <input id="callMinutes" type="number" min="0" max="1440"></label>
+      <label>Tijdmelder interval (min) <input id="timeMinutes" type="number" min="0" max="1440"></label>
+      <label>RX-afvaltijd (ms) <input id="hangMs" type="number" min="100" max="4000"></label>
+      <label>Maximale TX-duur (sec) <input id="timeoutSeconds" type="number" min="0" max="3600"></label>
+      <label>Afvalpiep frequentie (Hz) <input id="beepHz" type="number" min="200" max="3000"></label>
+      <label>Afvalpiep duur (ms) <input id="beepMs" type="number" min="30" max="1500"></label>
       </div>
-
-      <div class="settings">
-
-        <label class="wide">
-          Callgever (gesproken tekst)
-          <textarea id="callText" rows="2"></textarea>
-        </label>
-
-        <label>
-          Callgever interval (min)
-          <input id="callMinutes" type="number" min="0" max="1440">
-        </label>
-
-        <label>
-          Tijdmelder interval (min)
-          <input id="timeMinutes" type="number" min="0" max="1440">
-        </label>
-
-        <label>
-          RX-afvaltijd (ms)
-          <input id="hangMs" type="number" min="100" max="4000">
-        </label>
-
-        <label>
-          Maximale TX-duur (sec)
-          <input id="timeoutSeconds" type="number" min="0" max="3600">
-        </label>
-
-        <label>
-          Afvalpiep frequentie (Hz)
-          <input id="beepHz" type="number" min="200" max="3000">
-        </label>
-
-        <label>
-          Afvalpiep duur (ms)
-          <input id="beepMs" type="number" min="30" max="1500">
-        </label>
-
+      <label class="check"><input id="courtesy" type="checkbox"> Afvalpiep ingeschakeld</label>
+      <div class="welcome-control">
+        <button id="welcomeToggle" class="welcome-button" type="button" aria-pressed="false">🔇 GEBRUIKERSNAAM OMROEPEN: UIT</button>
+        <small>Alleen bij binnenkomst in het kanaal. A en B apart, geen melding bij verlaten. De keuze wordt automatisch opgeslagen.</small>
       </div>
-
-      <label class="check">
-        <input id="courtesy" type="checkbox">
-        Afvalpiep ingeschakeld
-      </label>
-
-      <p class="tip">
-        Meldingen worden op beide servers uitgezonden zodra
-        de crosslink vrij is. Klik op Callgever of Tijdmelder
-        om direct te testen.
-      </p>
-
-      <div class="testbuttons">
-        <button id="call" disabled>
-          📢 Callgever testen
-        </button>
-        <button id="time" disabled>
-          ◷ Tijdmelder testen
-        </button>
-        <button id="testA" disabled>
-          ♪ Test A
-        </button>
-        <button id="testB" disabled>
-          ♪ Test B
-        </button>
-      </div>
-
-      <button id="save" class="save">
-        Instellingen opslaan
-      </button>
-
-    </article>
-  </div>
-</section>
-
-<footer>
-  PTT-Crosslink v0.2.1 · Direct TeamSpeak Opus ·
-  Geen virtuele audiokabels · Lokale instellingen · Testversie
-</footer>
-
+      <p class="tip">Meldingen hoorbaar op beide servers zodra de crosslink vrij is. Klik op Callgever of Tijdmelder om direct te testen.</p>
+      <div class="testbuttons"><button id="call" disabled>📢 Callgever testen</button><button id="time" disabled>◷ Tijdmelder testen</button><button id="testA" disabled>♪ Test A</button><button id="testB" disabled>♪ Test B</button></div>
+      <button id="save" class="save">Instellingen opslaan</button>
+    </article></div>
+  </section>
+  <footer>PTT-Crosslink v0.2.2 · Direct TeamSpeak Opus · Geen virtuele audiokabels · Lokale instellingen · Testversie</footer>
 </main>
 </body>
 </html>
