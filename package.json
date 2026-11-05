@@ -1,8 +1,9 @@
+
 {
   "name": "ptt-crosslink",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
-  "description": "TeamSpeak 3 A/B crosslink met callgever, tijdmelder en afvalpiep voor Windows",
+  "description": "TeamSpeak A/B crosslink v0.2.1 met Windows TTS, callgever, tijdmelder en Channel Commander",
   "main": "main.cjs",
   "scripts": {
     "start": "electron .",
@@ -41,6 +42,12 @@
         "portable"
       ],
       "artifactName": "PTT-Crosslink-v${version}-Windows-x64.${ext}"
-    }
+    },
+    "extraResources": [
+      {
+        "from": "tts_windows.ps1",
+        "to": "tts_windows.ps1"
+      }
+    ]
   }
 }
